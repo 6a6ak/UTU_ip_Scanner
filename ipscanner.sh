@@ -1,11 +1,23 @@
 #!/bin/bash
 
-# Set the IP range to scan
-IP_RANGE="192.168.1.*"
+# Check if nmap is installed
+if ! command -v nmap &> /dev/null; then
+    echo "nmap is not installed. Installing nmap..."
+    sudo apt update && sudo apt install -y nmap
+fi
 
-# Run the nmap scan and store the output in a variable
-SCAN_OUTPUT=$(sudo nmap -sP $IP_RANGE)
+# Get the IP address range from the user
+read -p "Enter the IP address range (e.g., 192.168.0.0/24): " ip_range
 
-# Print the active IP addresses
-echo "Active IP addresses on the network:"
-echo "$SCAN_OUTPUT" | grep "Nmap scan report" | cut -d' ' -f5
+# Scan the local network for online devices
+echo "Scanning the local network for online devices..."
+
+# Store the results in an array
+mapfile -t results < <(nmap -sn $ip_range | grep "Nmap scan report for")
+
+# Print the online IPs in a nicer format
+echo "Online devices:"
+for result in "${results[@]}"; do
+    ip=$(echo $result | awk '{print $NF}')
+    echo "- $ip"
+done
