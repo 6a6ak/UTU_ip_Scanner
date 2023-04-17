@@ -1,2 +1,2 @@
 # UTU_ip_Scanner
-Fink you local network active addresess.
+Fink you local network active addresess by ubuntu.
